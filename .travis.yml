@@ -1,0 +1,15 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -t tuandl/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true tuandl/react-test npm test
+
+after_success:
+  - docker build -t tuandl/multi-client ./client
+  - docker build -t tuandl/multi-nginx ./nginx
+  - docker build -t tuandl/multi-server ./server
+  - docker build -t tuandl/multi-worker ./worker

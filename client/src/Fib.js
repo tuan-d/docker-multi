@@ -15,6 +15,7 @@ class Fib extends Component {
 
     async fetchValues() {
         const values = await axios.get('/api/values/current');
+        console.log("values: " + values);
         this.setState({ values: values.data })
     }
 
@@ -48,6 +49,8 @@ class Fib extends Component {
                 </div>
             )
         }
+
+        return entries;
     }
 
     render() {
