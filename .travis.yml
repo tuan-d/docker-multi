@@ -13,3 +13,10 @@ after_success:
   - docker build -t tuandl/multi-nginx ./nginx
   - docker build -t tuandl/multi-server ./server
   - docker build -t tuandl/multi-worker ./worker
+  # Login to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u tuandl "$DOCKER_ID" --password-stdin 
+  # take those images and push into docker hub
+  - docker push tuandl/multi-client
+  - docker push tuandl/multi-nginx
+  - docker push tuandl/multi-server
+  - docker push tuandl/multi-worker
