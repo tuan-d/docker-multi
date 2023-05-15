@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+# Object type we want to create
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  # number of different pods with identical template we want to create
+  replicas: 1
+  # to find the pods after they get created
+  selector:
+    matchLabels:
+      component: web
+  # pod configuration
+  template:
+    metadata:
+      labels:
+        component: web
+    spec:
+      containers:
+        - name: client
+          image: tuandl/multi-client
+          ports:
+            - containerPort: 3000

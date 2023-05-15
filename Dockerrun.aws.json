@@ -1,0 +1,36 @@
+{
+    "AWSEBDockerrunVersion": 2,
+    "containerDefinitions": [
+        {
+            "name": "client",
+            "image": "tuandl/multi-client",
+            "hostname": "client",
+            "essential": true
+        },
+        {
+            "name": "server",
+            "image": "tuandl/multi-server",
+            "hostname": "api",
+            "essential": false
+        },
+        {
+            "name": "worker",
+            "image": "tuandl/multi-worker",
+            "hostname": "worker",
+            "essential": false
+        },
+        {
+            "name": "nginx",
+            "image": "tuandl/multi-nginx",
+            "hostname": "nginx",
+            "essential": true,
+            "portMappings": [
+                {
+                    "hostPort": 80,
+                    "containerport": 80
+                }
+            ],
+            "links": ["client", "server"]
+        }
+    ]
+}
