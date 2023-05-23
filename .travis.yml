@@ -1,22 +1,27 @@
 sudo: required
 services:
   - docker
-
+env:
+  global:
+    - SHA=#(git rev-parse HEAD)
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
 before_install:
+  - openssl aes-256-cbc -K $encrypted_key -iv $encrypted_iv 
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud config set project ${project_id}
+  - gcloud config set compute/zone ${region_location}
+  - gcloud container clusters get-credentials ${cluster_name}
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker build -t tuandl/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -e CI=true tuandl/react-test npm test
+  - docker run -e CI=true tuandl/react-test npm run test
 
-after_success:
-  - docker build -t tuandl/multi-client ./client
-  - docker build -t tuandl/multi-nginx ./nginx
-  - docker build -t tuandl/multi-server ./server
-  - docker build -t tuandl/multi-worker ./worker
-  # Login to the docker CLI
-  - echo "$DOCKER_PASSWORD" | docker login -u tuandl "$DOCKER_ID" --password-stdin 
-  # take those images and push into docker hub
-  - docker push tuandl/multi-client
-  - docker push tuandl/multi-nginx
-  - docker push tuandl/multi-server
-  - docker push tuandl/multi-worker
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: master
